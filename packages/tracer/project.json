@@ -1,0 +1,45 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "tracer",
+  "sourceRoot": "packages/tracer/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/tracer",
+        "main": "packages/tracer/src/index.ts",
+        "tsConfig": "packages/tracer/tsconfig.lib.json",
+        "assets": ["packages/tracer/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/tracer/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/tracer"],
+      "options": {
+        "jestConfig": "packages/tracer/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "semantic-release": {
+      "executor": "@theunderscorer/nx-semantic-release:semantic-release",
+      "options": {
+        "github": true,
+        "changelog": true,
+        "npm": true,
+        "tagFormat": "tracer-v${VERSION}",
+        "buildTarget": "build",
+        "outputPath": "dist/packages/tracer"
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:client"]
+}

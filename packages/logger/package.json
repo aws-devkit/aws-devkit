@@ -1,0 +1,8 @@
+{
+  "name": "@aws-devkit/logger",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "peerDependencies": {
+    "@aws-lambda-powertools/logger": ">=1.2.1"
+  }
+}

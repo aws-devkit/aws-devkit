@@ -1,0 +1,8 @@
+{
+  "name": "@aws-devkit/tracer",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "peerDependencies": {
+    "@aws-lambda-powertools/tracer": ">=1.2.1"
+  }
+}

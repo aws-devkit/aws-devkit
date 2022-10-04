@@ -1,0 +1,69 @@
+name: CICD
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+env:
+  HUSKY: 0
+  GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+  NPM_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+  GIT_AUTHOR_EMAIL: ${{secrets.BOT_AUTHOR_EMAIL}}
+  GIT_AUTHOR_NAME: ${{secrets.BOT_AUTHOR_NAME}}
+  GIT_COMMITTER_EMAIL: ${{secrets.BOT_AUTHOR_EMAIL}}
+  GIT_COMMITTER_NAME: ${{secrets.BOT_AUTHOR_NAME}}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout [Pull Request]
+        uses: actions/checkout@v3
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          token: ${{ secrets.RELEASE_TOKEN }}
+          fetch-depth: 0
+
+      - name: Checkout [Default Branch]
+        uses: actions/checkout@v3
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
+          fetch-depth: 0
+
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        uses: nrwl/nx-set-shas@v3
+
+      - name: Use the node_modules cache if available [npm]
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ steps.versions.outputs.node_version }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ steps.versions.outputs.node_version }}-
+
+      - name: Install dependencies
+        run: |
+          npm ci
+
+      - run: |
+          npx nx format:check
+          npx nx affected --target lint --parallel 3 --base ${{ env.NX_BASE }} --head ${{ env.NX_HEAD }}
+          npx nx affected --target test --parallel 3 --ci --code-coverage --base ${{ env.NX_BASE }} --head ${{ env.NX_HEAD }}
+          npx nx affected --target build --parallel 3 --base ${{ env.NX_BASE }} --head ${{ env.NX_HEAD }}
+      - name: Release
+        if: ${{ success() && (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
+        env:
+          NPM_CONFIG_REGISTRY: https://npm.pkg.github.com
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          NPM_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: |
+          npx nx affected --target=semantic-release --maxParallel=1 --base ${{ env.NX_BASE }} --head ${{ env.NX_HEAD }}

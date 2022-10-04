@@ -1,0 +1,24 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "NodeNext",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@aws-devkit/client-sns": ["packages/client-sns/src/index.ts"],
+      "@aws-devkit/core": ["packages/core/src/index.ts"],
+      "@aws-devkit/logger": ["packages/logger/src/index.ts"],
+      "@aws-devkit/tracer": ["packages/tracer/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

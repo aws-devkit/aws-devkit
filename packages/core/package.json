@@ -1,0 +1,8 @@
+{
+  "name": "@aws-devkit/core",
+  "version": "0.0.1",
+  "type": "module",
+  "optionalDependencies": {
+    "nanoid": "^4.0.0"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "client-sns",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/client-sns/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/client-sns",
+        "main": "packages/client-sns/src/index.ts",
+        "tsConfig": "packages/client-sns/tsconfig.lib.json",
+        "assets": ["packages/client-sns/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/client-sns/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/client-sns"],
+      "options": {
+        "jestConfig": "packages/client-sns/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "semantic-release": {
+      "executor": "@theunderscorer/nx-semantic-release:semantic-release",
+      "options": {
+        "github": true,
+        "changelog": true,
+        "npm": true,
+        "buildTarget": "build",
+        "outputPath": "dist/packages/client-sns",
+        "tagFormat": "client-sns-v${VERSION}"
+      }
+    }
+  },
+  "tags": ["scope:sns", "type:client"]
+}
